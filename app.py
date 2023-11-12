@@ -16,7 +16,7 @@ def convert_image(img):
     byte_im = buf.getvalue()
     return byte_im
 
-def fix_image(upload):
+def fix_image(upload, target_filename):
     image = Image.open(upload)
     col1.write("Original Image :camera:")
     col1.image(image)
@@ -24,6 +24,9 @@ def fix_image(upload):
     fixed = remove(image)
     col2.write("BG Removed Image :wrench:")
     col2.image(fixed)
+
+    # Save the fixed image with the target filename
+    fixed.save(target_filename)
 
     return fixed
 
@@ -34,18 +37,22 @@ if my_upload is not None:
     if my_upload.size > MAX_FILE_SIZE:
         st.error("The uploaded file is too large. Please upload an image smaller than 5MB.")
     else:
+        # Provide a target filename (you can customize this logic)
+        target_filename = os.path.splitext(my_upload.name)[0] + ".png"
+
         # Include fix_image in the cache
-        fixed_image = fix_image(upload=my_upload)
+        fixed_image = fix_image(upload=my_upload, target_filename=target_filename)
 
         # Convert the fixed image for downloading
         fixed_image_data = convert_image(fixed_image)
 
         st.sidebar.markdown("\n")
-        st.download_button("Download image", fixed_image_data, "fixed.jpeg", "image/png")
+        st.download_button("Download image", fixed_image_data, target_filename)
         nk21_button = st.button("NK21❤️")
 
         if nk21_button:
-                st.balloons()
+            st.balloons()
+
 st.sidebar.markdown(
     """
     **Developer:** NK21
